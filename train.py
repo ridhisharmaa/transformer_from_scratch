@@ -145,6 +145,11 @@ score=compute_score(Q,K)
 
 score=scale_score(score,4)
 
+score=softmax(score)
+
+score=attention_score(score,V)
+
 print("Attention scores:")
 print(score)
+
 

@@ -28,4 +28,36 @@ def scale_score(score,dim):
   score = score / np.sqrt(dim)
 
   return score
+
+def softmax(score):
+
+  
+
+  softmax_scores=[]
+
+  for x in score:
+
+    row_sum=0
+     
+
+    for y in x:
+      row_sum = row_sum+np.exp(y)
+
+    row_scores=[]
+
+    for y in x:
+      row_scores.append(np.exp(y)/row_sum)
+
+    softmax_scores.append(row_scores)
+
+  return softmax_scores
+
+    
+def attention_score(score,V):
+
+  attention=score @ V
+
+  return attention
+
+  
    

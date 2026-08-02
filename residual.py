@@ -1,5 +1,5 @@
-import numpy as np
 
-def skip_connection(X, output):
 
-    return X + output
+def skip_connection(X, sublayer_output):
+
+    return X + sublayer_output

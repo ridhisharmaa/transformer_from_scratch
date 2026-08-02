@@ -1,5 +1,7 @@
-def load():
-  with open("data/corpus.txt") as file:
+import string
+
+def load(path):
+  with open(path) as file:
    corpus=file.readlines()
   
   return corpus
@@ -12,13 +14,17 @@ def tokenize(corpus):
 
   for sentence in corpus:
 
-   words= sentence.lower().split()
+   sentence=sentence.lower()
+
+   sentence=sentence.translate(str.maketrans('','',string.punctuation))
+
+   words=sentence.split()
 
    
 
-   for x in words:
-     if x not in vocab:
-       vocab.append(x)
+   for word in words:
+     if word not in vocab:
+       vocab.append(word)
 
   return vocab
 

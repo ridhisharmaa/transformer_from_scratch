@@ -9,7 +9,7 @@ def initialize_multihead_weights(embed_dim, num_heads):
   Wk = []
   Wv = []
 
-  for i in range(num_heads):
+  for _ in range(num_heads):
 
     Wq.append(np.random.rand(embed_dim, head_dim))
     Wk.append(np.random.rand(embed_dim, head_dim))
@@ -19,22 +19,28 @@ def initialize_multihead_weights(embed_dim, num_heads):
 
   return Wq, Wk, Wv, Wo
 
-def multihead_att(head_dim,X,Wq,Wk,Wv,Wo):
-  outputs=[]
+def multihead_attention(X,Wq,Wk,Wv,Wo):
+  outputs = []
+  head_dim = Wq[0].shape[1]
+  num_heads = len(Wq)
 
-  for i in range(len(Wq)): 
-    Q = X @ Wq[i]
-    K = X @ Wk[i]
-    V = X @ Wv[i]
 
-    score=Q@K.T
-    score=score/np.sqrt(head_dim)
-    score=softmax(score)
-    output=attention_score(score,V)
+  for head in range(num_heads): 
+
+    Q, K, V = compute_qkv(X, Wq[head], Wk[head], Wv[head])
+
+    score = compute_score(Q, K)
+
+    score = scale_score(score, head_dim)
+
+    score = softmax(score)
+
+    output = attention_score(score, V)
+    
     outputs.append(output)
 
 
-  result=np.concatenate(outputs,axis=1)
+  result=np.concatenate(outputs, axis=1)
 
   return result @ Wo
 

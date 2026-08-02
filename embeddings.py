@@ -2,16 +2,16 @@ import numpy as np
 
 def embedding_matrix(vocab, dim):
 
-  embedding=np.random.rand(len(vocab),dim)
+  embedding_matrix=np.random.rand(len(vocab),dim)
 
-  return embedding
+  return embedding_matrix
 
 
 def embedding_lookup(ids, embedding):
 
-  matrix=[]
+  embedded_tokens=[]
 
-  for x in ids:
-    matrix.append(embedding[x])
+  for token_id in ids:
+    embedded_tokens.append(embedding[token_id])
 
-  return np.array(matrix)
+  return np.array(embedded_tokens)

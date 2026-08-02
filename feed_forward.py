@@ -24,8 +24,6 @@ def feed_ffd(X,w1,b1,w2,b2):
 
   hidden=relU(hidden)
 
-  next=hidden @ w2 + b2
+  output=hidden @ w2 + b2
 
-  next=relU(next)
-
-  return next
+  return output

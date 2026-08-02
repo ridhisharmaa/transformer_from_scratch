@@ -2,9 +2,17 @@
 
 import numpy as np
 
-def layer_norm(X):
+def initialize_layer_norm(embed_dim):
 
-  normalized = []
+  gamma = np.ones(embed_dim) #Because initially we don't want to change the normalized output.
+
+  beta = np.zeros(embed_dim) #Because initially we don't want any shift.
+
+  return gamma, beta
+
+def layer_norm(X, gamma, beta):
+
+  normalized_output = []
 
   for row in X:
 
@@ -12,8 +20,10 @@ def layer_norm(X):
 
     std = np.std(row)
 
-    norm_row = (row - mean) / (std + 1e-8)
+    normalized_row = (row - mean) / (std + 1e-8)
 
-    normalized.append(norm_row)
+    output= gamma * normalized_row + beta
 
-  return np.array(normalized)
+    normalized_output.append(output)
+
+  return np.array(normalized_output)

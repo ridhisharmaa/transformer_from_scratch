@@ -20,8 +20,10 @@ def masked_multihead_attention(X, Wq, Wk, Wv, Wo):
   head_dim = Wq[0].shape[1]
 
   num_heads = len(Wq)
+
+  seq_len = len(X)
   
-  mask = create_mask(num_heads)
+  mask = create_mask(seq_len)
 
   for head in range(num_heads):
 

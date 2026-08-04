@@ -31,22 +31,16 @@ def scale_score(score,head_dim):
 
 def softmax(score):
 
-  
-
-  softmax_scores=[]
+  softmax_scores = []
 
   for row in score:
 
-    row_sum=0
-     
+    # Numerical stability
+    row = row - np.max(row)
 
-    for value in row:
-      row_sum = row_sum+np.exp(y)
+    exp_row = np.exp(row)
 
-    row_scores=[]
-
-    for value in row:
-      row_scores.append(np.exp(value)/row_sum)
+    row_scores = exp_row / np.sum(exp_row)
 
     softmax_scores.append(row_scores)
 

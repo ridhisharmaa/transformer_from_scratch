@@ -1,8 +1,8 @@
 import numpy as np
 
-def embedding_matrix(vocab, dim):
+def embedding_matrix(vocab_size, dim):
 
-  embedding_matrix=np.random.rand(len(vocab),dim)
+  embedding_matrix=np.random.rand(vocab_size,dim)
 
   return embedding_matrix
 

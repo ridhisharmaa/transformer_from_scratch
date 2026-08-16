@@ -1,5 +1,6 @@
 from tokenizer import *
 from transformer import *
+from predict import *
 
 # ==========================
 # Load Data
@@ -19,7 +20,11 @@ id_to_word = build_id_to_word(word_to_id)
 
 text = corpus[0]
 
-encoder_id = encode(text, word_to_id)
+ids = encode(text, word_to_id)
+
+encoder_id = ids[:-1]
+
+target_id = ids[1:]
 
 decoder_id = encoder_id
 
@@ -69,3 +74,7 @@ probabilities = transformer(
 print("Output Shape :", probabilities.shape)
 
 print(probabilities)
+
+predicted_words=predict(probabilities, id_to_word)
+
+print(predicted_words)

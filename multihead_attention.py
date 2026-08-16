@@ -1,5 +1,6 @@
 import numpy as np
 from self_attention import *
+from initializers import *
 
 def initialize_multihead_weights(embed_dim, num_heads):
 
@@ -11,11 +12,11 @@ def initialize_multihead_weights(embed_dim, num_heads):
 
   for _ in range(num_heads):
 
-    Wq.append(np.random.rand(embed_dim, head_dim))
-    Wk.append(np.random.rand(embed_dim, head_dim))
-    Wv.append(np.random.rand(embed_dim, head_dim))
+    Wq.append(xavier(embed_dim, head_dim))
+    Wk.append(xavier(embed_dim, head_dim))
+    Wv.append(xavier(embed_dim, head_dim))
 
-  Wo = np.random.rand(embed_dim, embed_dim)
+  Wo = xavier(embed_dim, embed_dim)
 
   return Wq, Wk, Wv, Wo
 

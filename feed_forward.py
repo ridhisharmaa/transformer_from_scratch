@@ -1,4 +1,5 @@
 import numpy as np
+from initializers import *
 
 # w1 -> embed dim x hidden dim
 # b1 -> 1 x hidden dim
@@ -7,10 +8,10 @@ import numpy as np
 
 def initialize_ffn(embed_dim, hidden_dim):
 
-  w1=np.random.rand(embed_dim,hidden_dim)
-  b1=np.random.rand(hidden_dim)
-  w2=np.random.rand(hidden_dim,embed_dim)
-  b2=np.random.rand(embed_dim)
+  w1=xavier(embed_dim,hidden_dim)
+  b1=np.zeros(hidden_dim)
+  w2=xavier(hidden_dim,embed_dim)
+  b2=np.zeros(embed_dim)
 
   return w1,b1,w2,b2
 

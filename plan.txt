@@ -1,0 +1,15 @@
+#	Step	What you'll build	Difficulty	Est. time
+0	Warm-up fixes	Fix the predict.py bug + switch weight init to small Gaussian/Xavier	🟢 Easy	30 min
+1	Cross-entropy loss	cross_entropy.py — turn probabilities into one loss number	🟢 Easy	45 min
+2	Softmax+CE gradient	The first gradient: ∂L/∂logits = pred − target	🟢 Easy	45 min
+3	Backprop: Linear	Refactor linear to cache, write linear_backward	🟡 Medium	1 hr
+4	Backprop: FFN	Cache + backward through the feed-forward (incl. ReLU)	🟡 Medium	1.5 hr
+5	Backprop: LayerNorm	The trickiest "small" one (mean/std derivatives)	🔴 Hard	2 hr
+6	Backprop: Residual	Easy — gradient just splits and flows both ways	🟢 Easy	30 min
+7	Backprop: Attention	Softmax Jacobian + Q/K/V paths — the big one	🔴 Hard	3 hr
+8	Backprop: Multi-head	Split/concat gradient plumbing across heads	🟡 Medium	1.5 hr
+9	Backprop: Encoder/Decoder blocks	Wire the sublayer backwards together	🟡 Medium	2 hr
+10	Full backward pass	Chain everything encoder↔decoder end-to-end	🔴 Hard	2 hr
+11	Optimizer	SGD first, then Adam	🟡 Medium	1.5 hr
+12	Training loop	Teacher forcing, loss-goes-down, weight saving	🟡 Medium	2 hr
+13	Watch it learn + polish	Train on corpus.txt, greedy decode, README update	🟢 Easy	1.5 hr

@@ -1,10 +1,11 @@
 import numpy as np
+from initializers import *
 
 def initialize_weights(embed_dim):
 
-    Wq = np.random.rand(embed_dim, embed_dim)
-    Wk = np.random.rand(embed_dim, embed_dim)
-    Wv = np.random.rand(embed_dim, embed_dim)
+    Wq = xavier(embed_dim, embed_dim)
+    Wk = xavier(embed_dim, embed_dim)
+    Wv = xavier(embed_dim, embed_dim)
 
     return Wq, Wk, Wv
 

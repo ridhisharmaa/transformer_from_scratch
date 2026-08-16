@@ -2,7 +2,7 @@ import numpy as np
 
 def embedding_matrix(vocab_size, dim):
 
-  embedding_matrix=np.random.rand(vocab_size,dim)
+  embedding_matrix=np.random.randn(vocab_size,dim) * 0.02*0.01
 
   return embedding_matrix
 

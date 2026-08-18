@@ -13,3 +13,76 @@
 11	Optimizer	SGD first, then Adam	🟡 Medium	1.5 hr
 12	Training loop	Teacher forcing, loss-goes-down, weight saving	🟡 Medium	2 hr
 13	Watch it learn + polish	Train on corpus.txt, greedy decode, README update	🟢 Easy	1.5 hr
+
+
+
+
+how do you check particular backprop func?
+
+Great question — this is the exact skill that makes you self-sufficient. Once you know the recipe, you can verify any backward function you ever write, forever. Here's the general 5-step recipe, then a reusable template.
+
+The recipe (works for any layer)
+Write the forward for that layer (inputs → output).
+Make a scalar loss L = np.sum(dOut * output) for a fixed random dOut. (Trick explained below.)
+Analytic gradient = call your backprop function.
+Numerical gradient = nudge each input element by ±h, recompute L, do (L₊ − L₋) / 2h.
+Compare — if max|analytic − numerical| < ~1e-6, your backprop is correct. ✅
+The one clever trick (step 2)
+
+Your backprop function takes dOut (upstream gradient) as input. So we build a fake loss whose gradient w.r.t. output is exactly that dOut:
+
+𝐿=∑(𝑑𝑂𝑢𝑡×𝑜𝑢𝑡𝑝𝑢𝑡)  ⇒  (∂𝐿/∂ 𝑜𝑢𝑡𝑝𝑢𝑡)=𝑑𝑂𝑢𝑡
+
+
+Now ∂L/∂input (measured numerically) should equal what your backprop returns. That's what makes the two comparable.
+
+Reusable template
+
+Drop this helper in a file (e.g. grad_check.py) — it works for any-shaped array:
+
+import numpy as np
+
+def numerical_grad(loss_fn, x, h=1e-6):
+    """Numerically estimate dL/dx by nudging each element of x."""
+    grad = np.zeros_like(x)
+    it = np.nditer(x, flags=['multi_index'])
+    while not it.finished:
+        idx = it.multi_index
+        old = x[idx]
+        x[idx] = old + h; Lplus  = loss_fn()
+        x[idx] = old - h; Lminus = loss_fn()
+        x[idx] = old                      # restore!
+        grad[idx] = (Lplus - Lminus) / (2 * h)
+        it.iternext()
+    return grad
+Worked example — checking your linear_backprop
+
+Your linear_backprop(h, W, dOut) returns dh, dW, db for output = h @ W + b:
+
+import numpy as np
+from backprop import linear_backprop
+from grad_check import numerical_grad
+
+np.random.seed(0)
+h = np.random.randn(3, 4)          # input
+W = np.random.randn(4, 5)          # weight
+b = np.zeros(5)
+dOut = np.random.randn(3, 5)       # fixed random upstream gradient
+
+# forward + fake scalar loss
+def loss():
+    output = h @ W + b
+    return np.sum(dOut * output)   # <-- the trick: dL/doutput = dOut
+
+# analytic (your function)
+dh, dW, db = linear_backprop(h, W, dOut)
+
+# numerical (brute force) and compare
+print("dh diff:", np.abs(numerical_grad(loss, h) - dh).max())
+print("dW diff:", np.abs(numerical_grad(loss, W) - dW).max())
+print("db diff:", np.abs(numerical_grad(loss, b) - db).max())
+# all should print ~1e-10
+The 3 things that matter
+Central difference (L₊ − L₋)/2h, not (L₊ − L)/h — far more accurate (error O(h²) vs O(h)).
+h ≈ 1e-6 — too big = inaccurate, too small = floating-point noise. 1e-5–1e-7 is the sweet spot.
+Restore the value after nudging (x[idx] = old) — forget this and every later estimate is corrupted.

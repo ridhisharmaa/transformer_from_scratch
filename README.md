@@ -16,8 +16,8 @@ The goal is not just to make it work, but to understand **every mathematical ope
 
 - **Full backward pass, from scratch** — cross-entropy, softmax, linear, feed-forward, LayerNorm, residual, multi-head attention, masked self-attention, and cross-attention, all wired through encoder and decoder blocks.
 - **Every gradient is gradient-checked** against numerical (central-difference) gradients — the whole model agrees to **~1e-10**.
-- **Trains and learns** — loss decreases with SGD on a toy corpus.
-- **Clean, modular code** — forward, backward, initialization, and the optimizer each live in their own file.
+- **Trains and generates** — loss decreases with SGD, and the trained model produces text via greedy decoding (e.g. `"machine"` → `"machine learning is powerful"`).
+- **Clean, modular code** — forward, backward, initialization, the optimizer, training, and generation each live in their own file.
 
 ---
 
@@ -39,6 +39,8 @@ transformer-from-scratch/
 ├── backprop.py         # every backward function (hand-derived gradients)
 ├── model.py            # transformer_forward → cross_entropy_loss → transformer_backward
 ├── optimizer.py        # SGD parameter update
+├── train.py            # entry point: load data → train → print loss → generate
+├── generate.py         # greedy autoregressive text generation
 │
 ├── tokenizer.py        # vocab, encode/decode
 ├── predict.py          # argmax decoding
@@ -82,23 +84,35 @@ The `learning_components/` folder holds the original, one-file-per-component imp
 
 ---
 
-## 🚀 Training
+## 🚀 Run it
 
-```python
-from initializers import init_params
-from model import transformer_forward, cross_entropy_loss, transformer_backward
-from optimizer import sgd_step
-
-params = init_params(vocab=15, embed=16, hidden=32, num_heads=2, num_layers=2)
-
-for step in range(200):
-    probs, caches = transformer_forward(enc_ids, dec_ids, params)   # forward
-    loss  = cross_entropy_loss(probs, target_ids)                    # how wrong
-    grads = transformer_backward(probs, target_ids, caches, params)  # backward
-    sgd_step(params, grads, lr=0.1)                                  # learn
+```bash
+python train.py
 ```
 
-The loss falls as the model trains — e.g. from ~3.5 (random) toward ~1.0 on a small example.
+This loads the corpus, trains the model with SGD, and then generates text from the trained weights:
+
+```text
+epoch   0   avg loss = 3.75      # random model
+epoch 160   avg loss = 0.19
+epoch 299   avg loss = 0.15      # learned
+
+--- generated text ---
+  machine            ->  machine learning is powerful
+  transformers are   ->  transformers are amazing
+  deep               ->  deep learning is powerful
+```
+
+The core training step is four lines — the same loop for every example:
+
+```python
+probs, caches = transformer_forward(enc_ids, dec_ids, params)   # forward
+loss  = cross_entropy_loss(probs, target_ids)                    # how wrong
+grads = transformer_backward(probs, target_ids, caches, params)  # backward
+sgd_step(params, grads, lr)                                      # learn
+```
+
+Because the corpus is tiny and decoding is greedy (no end-of-sentence token), generations are coherent for the first few words and then drift — the expected behaviour at this scale.
 
 ---
 
@@ -119,7 +133,7 @@ The loss falls as the model trains — e.g. from ~3.5 (random) toward ~1.0 on a 
 | Full model (forward + loss + backward) | ✅ | ✅ |
 | SGD optimizer + training loop | ✅ | — |
 | Gradient checking (whole model ~1e-10) | ✅ | ✅ |
-| Text generation / greedy decode | 🚧 | — |
+| Text generation / greedy decode | ✅ | — |
 
 ---
 
@@ -137,7 +151,7 @@ The loss falls as the model trains — e.g. from ~3.5 (random) toward ~1.0 on a 
 
 ## 🔮 Next
 
-- Greedy / beam-search text generation
+- Beam-search / temperature sampling, and an end-of-sentence token
 - Adam optimizer
 - Mini-batch training on a larger dataset
 - Weight saving & loading
